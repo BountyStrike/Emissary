@@ -6,7 +6,7 @@ The idea is to hook Emissary into https://github.com/BountyStrike/Bountystrike-s
 
 ## Usage
 
-**Create a configuration file:**
+**Create emissary.ini in the same location as the executable:**
 ```
 [Telegram]
 chat_id=xxxxxx
@@ -15,6 +15,8 @@ api_key=xxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 [Slack]
 webhook=https://hooks.slack.com/services/xxxxxxxxxx/xxxxxxxxxx/xxxxxxxxxx
 ```
+
+Now you can start using emissary :)
 
 **Pipe data via stdin:**
 ```
