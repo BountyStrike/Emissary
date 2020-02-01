@@ -13,15 +13,6 @@ import (
 	"gopkg.in/ini.v1"
 )
 
-type cliOptions struct {
-	telegram bool
-	discord  bool
-	slack    bool
-	version  bool
-	stdin    bool
-	message  string
-}
-
 func checkResponse(httpResponse *http.Response, err error) {
 	if httpResponse.StatusCode > 201 {
 		body, respErr := ioutil.ReadAll(httpResponse.Body)
@@ -40,18 +31,10 @@ func checkResponse(httpResponse *http.Response, err error) {
 }
 
 func main() {
-	opts := cliOptions{}
-	flag.BoolVar(&opts.telegram, "telegram", false, "Send via telegram")
-	flag.BoolVar(&opts.discord, "discord", false, "Send via discord")
-	flag.BoolVar(&opts.slack, "slack", false, "Send via slack")
-	flag.BoolVar(&opts.version, "v", false, "Show version number")
-	flag.BoolVar(&opts.version, "version", false, "Show version number")
-	flag.BoolVar(&opts.stdin, "stdin", false, "Take input from stdin")
-	flag.StringVar(&opts.message, "message", "", "The message you want to send")
-	flag.Parse()
+	opts := processArgs()
 
 	if opts.version {
-		fmt.Printf("Emissary version: %s\n", "1.0")
+		fmt.Printf("Emissary version: %s\n", VERSION)
 		os.Exit(0)
 	}
 	if len(os.Args) <= 1 {
