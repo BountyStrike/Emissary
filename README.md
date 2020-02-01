@@ -6,6 +6,25 @@ The idea is to hook Emissary into https://github.com/BountyStrike/Bountystrike-s
 
 ## Usage
 
+```
+$ emissary
+Send data through chat channels. Made by @dubs3c.
+
+Usage:
+  emissary [channel] [message]
+
+Options:
+  -s,  --slack        Send via Slack
+  -t,  --telegram     Send via Telegram
+  -si, --stdin        Get message from stdin
+  -m,  --message      Message to send
+  -v,  --version      Show version
+
+Examples:
+  emissary -telegram --message "Hello telegram"
+  cat domins.txt | emissary --slack --stdin
+```
+
 **Create emissary.ini in the same location as the executable:**
 ```
 [Telegram]
@@ -20,17 +39,17 @@ Now you can start using emissary :)
 
 **Pipe data via stdin:**
 ```
-$ cat domains.txt | emissary -telegram -stdin
+$ cat domains.txt | emissary --telegram --stdin
 ```
 
 **Specify a message as an argument:**
 ```
-$ emissary -telegram -message "This is a very cool message"
+$ emissary --telegram --message "This is a very cool message"
 ```
 
 **Send to multiple channels:**
 ```
-$ cat domains.txt | emissary -telegram -slack -stdin
+$ cat domains.txt | emissary -t -s -si
 ```
 
 Right now the Emissary will only deliver 20 rows, to protect against accidentally sending a gazillion domains :) 
