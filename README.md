@@ -16,6 +16,7 @@ Usage:
 Options:
   -s,  --slack        Send via Slack
   -t,  --telegram     Send via Telegram
+  -e,  --email        Send via Email
   -si, --stdin        Get message from stdin
   -m,  --message      Message to send
   -v,  --version      Show version
@@ -33,7 +34,17 @@ api_key=xxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 [Slack]
 webhook=https://hooks.slack.com/services/xxxxxxxxxx/xxxxxxxxxx/xxxxxxxxxx
+
+[Email]
+username=
+password=
+recipient=
+server=smtp.gmail.com
+port=587
+subject="New domains found!"
 ```
+
+*When using gmail, you need to activate less secure apps on your account: [https://myaccount.google.com/lesssecureapps](https://myaccount.google.com/lesssecureapps)*
 
 Now you can start using emissary :)
 

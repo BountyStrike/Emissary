@@ -14,14 +14,16 @@ import (
 )
 
 func checkResponse(httpResponse *http.Response, err error) {
-	if httpResponse.StatusCode > 201 {
-		body, respErr := ioutil.ReadAll(httpResponse.Body)
-		if respErr != nil {
-			log.Println("Error reading response body")
-			os.Exit(1)
+	if httpResponse != nil {
+		if httpResponse.StatusCode > 201 {
+			body, respErr := ioutil.ReadAll(httpResponse.Body)
+			if respErr != nil {
+				log.Println("Error reading response body")
+				os.Exit(1)
+			}
+			log.Println("HTTP Status code: ", httpResponse.StatusCode)
+			log.Println("HTTP Body: ", string(body))
 		}
-		log.Println("HTTP Status code: ", httpResponse.StatusCode)
-		log.Println("HTTP Body: ", string(body))
 	}
 
 	if err != nil {
@@ -97,6 +99,22 @@ func main() {
 		resp, err := Slack(opts.message, slackWebhook)
 
 		checkResponse(resp, err)
+	}
+
+	if opts.email {
+		emailUsername := cfg.Section("Email").Key("username").String()
+		emailPassword := cfg.Section("Email").Key("password").String()
+		emailRecipient := cfg.Section("Email").Key("recipient").String()
+		emailPort := cfg.Section("Email").Key("port").String()
+		emailServer := cfg.Section("Email").Key("server").String()
+		emailSubject := cfg.Section("Email").Key("subject").String()
+
+		emailConfig := EmailConfig{username: emailUsername, password: emailPassword,
+			recipient: emailRecipient, port: emailPort, server: emailServer, subject: emailSubject,
+			message: opts.message}
+
+		checkResponse(nil, Email(emailConfig))
+
 	}
 
 }

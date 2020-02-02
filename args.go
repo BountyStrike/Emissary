@@ -10,6 +10,7 @@ type cliOptions struct {
 	telegram bool
 	discord  bool
 	slack    bool
+	email    bool
 	version  bool
 	stdin    bool
 	message  string
@@ -22,6 +23,8 @@ func processArgs() cliOptions {
 	flag.BoolVar(&opts.telegram, "t", false, "Send via telegram")
 	flag.BoolVar(&opts.slack, "slack", false, "Send via slack")
 	flag.BoolVar(&opts.slack, "s", false, "Send via slack")
+	flag.BoolVar(&opts.email, "email", false, "Send via smtp")
+	flag.BoolVar(&opts.email, "e", false, "Send via smtp")
 	flag.BoolVar(&opts.version, "version", false, "Show version number")
 	flag.BoolVar(&opts.version, "v", false, "Show version number")
 	flag.BoolVar(&opts.stdin, "stdin", false, "Take input from stdin")
@@ -44,6 +47,7 @@ func init() {
 		h += "Options:\n"
 		h += "  -s,  --slack        Send via Slack\n"
 		h += "  -t,  --telegram     Send via Telegram\n"
+		h += "  -e,  --email        Send via Email\n"
 		h += "  -si, --stdin        Get message from stdin\n"
 		h += "  -m,  --message      Message to send\n"
 		h += "  -v,  --version      Show version\n"
