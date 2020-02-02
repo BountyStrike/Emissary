@@ -70,7 +70,7 @@ Some stuff that I plan to implement:
 - [X] Slack
 - [X] Telegram
 - [ ] Discord
-- [ ] Email
+- [X] Email
 - [ ] Let user decide max rows to be sent
 - [ ] Place config file in ~/.config/emissary.ini
 
