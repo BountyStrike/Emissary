@@ -8,6 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/user"
+	"path/filepath"
 	"strings"
 
 	"gopkg.in/ini.v1"
@@ -44,7 +46,15 @@ func main() {
 		os.Exit(0)
 	}
 
-	cfg, err := ini.Load("emissary.ini")
+	User, err := user.Current()
+
+	if err != nil {
+		log.Fatal("Something went wrong trying to figure out your home directory", err)
+	}
+
+	configPath := filepath.FromSlash(User.HomeDir + "/.config/emissary.ini")
+
+	cfg, err := ini.Load(configPath)
 	if err != nil {
 		log.Fatal("Fail to read configuration file: ", err)
 		os.Exit(1)

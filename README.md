@@ -26,7 +26,7 @@ Examples:
   cat domins.txt | emissary --slack --stdin
 ```
 
-**Create emissary.ini in the same location as the executable:**
+**Create ~/.config/emissary.ini with the following:**
 ```
 [Telegram]
 chat_id=xxxxxx
@@ -72,7 +72,7 @@ Some stuff that I plan to implement:
 - [ ] Discord
 - [X] Email
 - [ ] Let user decide max rows to be sent
-- [ ] Place config file in ~/.config/emissary.ini
+- [X] Place config file in ~/.config/emissary.ini
 
 ## Contributing
 Any feedback or ideas are welcome! Want to improve something? Create a pull request!
