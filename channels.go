@@ -34,8 +34,11 @@ func Telegram(chatID string, apiKey string, message string) (*http.Response, err
 
 // Slack Send messages via Slack
 func Slack(message string, webhook string) (*http.Response, error) {
-	js := `{"text":"` + message + `"}`
-	return request(webhook, js)
+	jayson := map[string]interface{}{
+		"text": message,
+	}
+	js, _ := json.Marshal(jayson)
+	return request(webhook, string(js))
 }
 
 // Email Send messages via email

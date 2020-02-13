@@ -14,6 +14,7 @@ type cliOptions struct {
 	version  bool
 	stdin    bool
 	message  string
+	rows     int
 }
 
 func processArgs() cliOptions {
@@ -31,6 +32,8 @@ func processArgs() cliOptions {
 	flag.BoolVar(&opts.stdin, "si", false, "Take input from stdin")
 	flag.StringVar(&opts.message, "message", "", "The message you want to send")
 	flag.StringVar(&opts.message, "m", "", "The message you want to send")
+	flag.IntVar(&opts.rows, "rows", 20, "Max rows/lines to send, 0 for unlimited. Default 20")
+	flag.IntVar(&opts.rows, "r", 20, "Max rows/lines to send, 0 for unlimited. Default 20")
 	flag.Parse()
 
 	return opts
@@ -50,6 +53,7 @@ func init() {
 		h += "  -e,  --email        Send via Email\n"
 		h += "  -si, --stdin        Get message from stdin\n"
 		h += "  -m,  --message      Message to send\n"
+		h += "  -r,  --rows         Max rows/lines to send, 0 for unlimited. Default 20\n"
 		h += "  -v,  --version      Show version\n"
 
 		h += "\nExamples:\n"

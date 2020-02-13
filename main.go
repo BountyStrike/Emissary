@@ -20,11 +20,11 @@ func checkResponse(httpResponse *http.Response, err error) {
 		if httpResponse.StatusCode > 201 {
 			body, respErr := ioutil.ReadAll(httpResponse.Body)
 			if respErr != nil {
-				log.Println("Error reading response body")
-				os.Exit(1)
+				log.Println("Error reading response body:", respErr)
 			}
-			log.Println("HTTP Status code: ", httpResponse.StatusCode)
-			log.Println("HTTP Body: ", string(body))
+			log.Println("Response HTTP Status code: ", httpResponse.StatusCode)
+			log.Println("Response HTTP Body: ", string(body))
+			os.Exit(1)
 		}
 	}
 
@@ -70,26 +70,26 @@ func main() {
 		os.Exit(1)
 	}
 
-	messages := make([]string, 21)
+	messages := []string{"Data from Emissary\n--------"}
 
 	if opts.stdin {
 		count := 0
 		sc := bufio.NewScanner(os.Stdin)
 		for sc.Scan() {
 			msg := sc.Text()
-			if msg != "" {
-				if count < 20 {
-					messages[count] = msg
-					count++
+			if opts.rows == 0 {
+				messages = append(messages, msg)
+			} else {
+				if count < opts.rows {
+					messages = append(messages, msg)
 				} else {
-					messages[count] = "Sent 20 domains, there are more on the server."
 					break
 				}
-
-			} else {
-				break
 			}
+			count++
 		}
+
+		messages = append(messages, fmt.Sprintf("--------\nSent %d lines", count))
 
 		opts.message = strings.Join(messages[:], "\n")
 	}

@@ -19,6 +19,7 @@ Options:
   -e,  --email        Send via Email
   -si, --stdin        Get message from stdin
   -m,  --message      Message to send
+  -r,  --rows         Max rows/lines to send, 0 for unlimited. Default 20
   -v,  --version      Show version
 
 Examples:
@@ -63,6 +64,16 @@ $ emissary --telegram --message "This is a very cool message"
 $ cat domains.txt | emissary -t -s -si
 ```
 
+**Send only 10 lines:**
+```
+$ cat domains.txt | emissary -t -si --rows 10
+```
+
+**Send everything from the file:**
+```
+$ cat domains.txt | emissary -t -si -r 0
+```
+
 Right now the Emissary will only deliver 20 rows, to protect against accidentally sending a gazillion domains :) 
 
 ## Todo
@@ -71,7 +82,7 @@ Some stuff that I plan to implement:
 - [X] Telegram
 - [ ] Discord
 - [X] Email
-- [ ] Let user decide max rows to be sent
+- [X] Let user decide max rows to be sent
 - [X] Place config file in ~/.config/emissary.ini
 
 ## Contributing
