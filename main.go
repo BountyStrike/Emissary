@@ -76,7 +76,12 @@ func main() {
 		count := 0
 		sc := bufio.NewScanner(os.Stdin)
 		for sc.Scan() {
-			msg := sc.Text()
+			// Stupid ms teams not handling new lines properly
+			if opts.teams {
+				msg := sc.Text() + "\n"
+			} else {
+				msg := sc.Text()
+			}
 			if opts.rows == 0 {
 				messages = append(messages, msg)
 			} else {
@@ -107,6 +112,14 @@ func main() {
 		slackWebhook := cfg.Section("Slack").Key("webhook").String()
 
 		resp, err := Slack(opts.message, slackWebhook)
+
+		checkResponse(resp, err)
+	}
+
+	if opts.teams {
+		slackWebhook := cfg.Section("Teams").Key("webhook").String()
+
+		resp, err := Teams(opts.message, slackWebhook)
 
 		checkResponse(resp, err)
 	}

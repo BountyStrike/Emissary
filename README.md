@@ -80,6 +80,7 @@ Right now the Emissary will only deliver 20 rows, to protect against accidentall
 Some stuff that I plan to implement:
 - [X] Slack
 - [X] Telegram
+- [X] Microsoft Teams
 - [ ] Discord
 - [X] Email
 - [X] Let user decide max rows to be sent

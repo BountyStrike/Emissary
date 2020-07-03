@@ -61,6 +61,15 @@ func Email(email EmailConfig) error {
 	return nil
 }
 
+// Teams Send messages via Microsoft Teams
+func Teams(message string, webhook string) (*http.Response, error) {
+	jayson := map[string]interface{}{
+		"text": message,
+	}
+	js, _ := json.Marshal(jayson)
+	return request(webhook, string(js))
+}
+
 func request(endpoint string, data string) (*http.Response, error) {
 
 	tr := &http.Transport{
