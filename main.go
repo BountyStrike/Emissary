@@ -75,12 +75,13 @@ func main() {
 	if opts.stdin {
 		count := 0
 		sc := bufio.NewScanner(os.Stdin)
+		msg := ""
 		for sc.Scan() {
 			// Stupid ms teams not handling new lines properly
 			if opts.teams {
-				msg := sc.Text() + "\n"
+				msg = sc.Text() + "\n"
 			} else {
-				msg := sc.Text()
+				msg = sc.Text()
 			}
 			if opts.rows == 0 {
 				messages = append(messages, msg)
