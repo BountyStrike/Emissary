@@ -4,6 +4,7 @@
 
   Send notifications via different channels such as Slack, Telegram or Teams in your bug bounty flow. 
 </center>
+
 ## Motivation
 The idea is to hook Emissary into https://github.com/BountyStrike/Bountystrike-sh which will notify me on Telegram when new domains have been found.
 
