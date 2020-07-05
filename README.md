@@ -17,6 +17,7 @@ Options:
   -s,  --slack        Send via Slack
   -t,  --telegram     Send via Telegram
   -e,  --email        Send via Email
+  -ms, --teams        Send via Microsoft Teams
   -si, --stdin        Get message from stdin
   -m,  --message      Message to send
   -r,  --rows         Max rows/lines to send, 0 for unlimited. Default 20
