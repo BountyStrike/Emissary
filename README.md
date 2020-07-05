@@ -1,9 +1,10 @@
-<center>
-  <h1>Emissary</h1>
-  <img  width="300" height="300" src="./img.png">
-
+<h1 align="center">Emissary</h1>
+<p align="center">
+  <img width="300" height="300" src="./img.png">
+  <p align="center">
   Send notifications via different channels such as Slack, Telegram or Teams in your bug bounty flow. 
-</center>
+  </p>
+</p>
 
 ## Motivation
 The idea is to hook Emissary into https://github.com/BountyStrike/Bountystrike-sh which will notify me on Telegram when new domains have been found.
