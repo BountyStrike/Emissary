@@ -36,6 +36,9 @@ api_key=xxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 [Slack]
 webhook=https://hooks.slack.com/services/xxxxxxxxxx/xxxxxxxxxx/xxxxxxxxxx
 
+[Teams]
+webhook=https://outlook.office.com/webhook/xxxxxxxxxxxxxxxxxxxxx
+
 [Email]
 username=
 password=
