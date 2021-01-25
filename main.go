@@ -70,6 +70,22 @@ func main() {
 		os.Exit(1)
 	}
 
+	if opts.channel != "" {
+		webhook := cfg.Section(opts.channel).Key("webhook").String()
+		textField := cfg.Section(opts.channel).Key("textField").MustString("text")
+		additionalData := cfg.Section(opts.channel).Key("data").String()
+
+		if webhook == "" {
+			fmt.Printf("[-] Channel %s does not contain a webhook...", opts.channel)
+			os.Exit(1)
+		}
+
+		resp, err := WebhookRequest(webhook, opts.message, textField, additionalData)
+
+		checkResponse(resp, err)
+
+	}
+
 	messages := []string{"Data from Emissary\n--------"}
 
 	if opts.stdin {
@@ -101,26 +117,31 @@ func main() {
 	}
 
 	if opts.telegram {
-		telegramAPIKey := cfg.Section("Telegram").Key("api_key").String()
-		telegramUser := cfg.Section("Telegram").Key("chat_id").String()
+		webhook := cfg.Section("Telegram").Key("webhook").String()
+		textField := cfg.Section("Telegram").Key("textField").MustString("text")
+		additionalData := cfg.Section("Telegram").Key("data").String()
 
-		resp, err := Telegram(telegramUser, telegramAPIKey, opts.message)
+		resp, err := WebhookRequest(webhook, opts.message, textField, additionalData)
 
 		checkResponse(resp, err)
 	}
 
 	if opts.slack {
-		slackWebhook := cfg.Section("Slack").Key("webhook").String()
+		webhook := cfg.Section("Slack").Key("webhook").String()
+		textField := cfg.Section("Slack").Key("textField").MustString("text")
+		additionalData := cfg.Section("Slack").Key("data").String()
 
-		resp, err := Slack(opts.message, slackWebhook)
+		resp, err := WebhookRequest(webhook, opts.message, textField, additionalData)
 
 		checkResponse(resp, err)
 	}
 
 	if opts.teams {
-		slackWebhook := cfg.Section("Teams").Key("webhook").String()
+		webhook := cfg.Section("Teams").Key("webhook").String()
+		textField := cfg.Section("Teams").Key("textField").MustString("text")
+		additionalData := cfg.Section("Teams").Key("data").String()
 
-		resp, err := Teams(opts.message, slackWebhook)
+		resp, err := WebhookRequest(webhook, opts.message, textField, additionalData)
 
 		checkResponse(resp, err)
 	}

@@ -19,24 +19,25 @@ type EmailConfig struct {
 	message   string
 }
 
-// Telegram Send messages via telegram
-func Telegram(chatID string, apiKey string, message string) (*http.Response, error) {
+// WebhookRequest A general method for sending requests to webhooks
+func WebhookRequest(webhook string, message string, msgField string, additionalData string) (*http.Response, error) {
 
 	jayson := map[string]interface{}{
-		"chat_id": chatID,
-		"text":    message,
+		msgField: message,
 	}
-	js, _ := json.Marshal(jayson)
-	endpoint := "https://api.telegram.org/bot" + apiKey + "/sendMessage"
 
-	return request(endpoint, string(js))
-}
-
-// Slack Send messages via Slack
-func Slack(message string, webhook string) (*http.Response, error) {
-	jayson := map[string]interface{}{
-		"text": message,
+	if additionalData != "" {
+		data := []byte(`` + additionalData + ``)
+		var f interface{}
+		if err := json.Unmarshal(data, &f); err != nil {
+			return nil, err
+		}
+		m := f.(map[string]interface{})
+		for k, v := range m {
+			jayson[k] = v
+		}
 	}
+
 	js, _ := json.Marshal(jayson)
 	return request(webhook, string(js))
 }
@@ -59,15 +60,6 @@ func Email(email EmailConfig) error {
 	}
 
 	return nil
-}
-
-// Teams Send messages via Microsoft Teams
-func Teams(message string, webhook string) (*http.Response, error) {
-	jayson := map[string]interface{}{
-		"text": message,
-	}
-	js, _ := json.Marshal(jayson)
-	return request(webhook, string(js))
 }
 
 func request(endpoint string, data string) (*http.Response, error) {
