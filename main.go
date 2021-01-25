@@ -17,7 +17,7 @@ import (
 
 func checkResponse(httpResponse *http.Response, err error) {
 	if httpResponse != nil {
-		if httpResponse.StatusCode > 201 {
+		if httpResponse.StatusCode >= 400 {
 			body, respErr := ioutil.ReadAll(httpResponse.Body)
 			if respErr != nil {
 				log.Println("Error reading response body:", respErr)

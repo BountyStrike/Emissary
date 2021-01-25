@@ -35,6 +35,7 @@ Options:
 Examples:
   emissary -telegram --message "Hello telegram"
   cat domins.txt | emissary --slack --stdin
+  emissary --channel Discord -m "It works!!!"
 ```
 
 **Create ~/.config/emissary.ini with the following:**
@@ -58,10 +59,31 @@ server=smtp.gmail.com
 port=587
 subject="New domains found!"
 ```
-
 *When using gmail, you need to activate less secure apps on your account: [https://myaccount.google.com/lesssecureapps](https://myaccount.google.com/lesssecureapps)*
 
 Now you can start using emissary :)
+
+
+**Custom Webhooks**
+
+It's possible to add your own channels as well, adding Discord as a custom channel looks like this:
+
+```
+[Discord]
+webhook=https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxx
+textField=content
+```
+
+And can be executed with `emissary --channel Discord -m "It works!!!"`.
+
+The following fields can be used for a given channel:
+
+| field     | description                                                                                                                                                |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| webhook   | The actual webhook to send data to                                                                                                                         |
+| textField | Some API's have a specific json key where the message goes, here you can define that. Default key is `text`, e.g. `{"text": "Your message"}`.              |
+| data      | If you want to send additional data, you can specify that here as a json formatted string, e.g. `data={"someKey": "someValue", "otherKey": "otherValue"}`. |
+
 
 **Pipe data via stdin:**
 ```
@@ -88,17 +110,7 @@ $ cat domains.txt | emissary -t -si --rows 10
 $ cat domains.txt | emissary -t -si -r 0
 ```
 
-Right now the Emissary will only deliver 20 rows, to protect against accidentally sending a gazillion domains :) 
-
-## Todo
-Some stuff that I plan to implement:
-- [X] Slack
-- [X] Telegram
-- [X] Microsoft Teams
-- [ ] Discord
-- [X] Email
-- [X] Let user decide max rows to be sent
-- [X] Place config file in ~/.config/emissary.ini
+Emissary will only send 20 rows by default, this is to protect against accidentally sending a gazillion domains :) It can be overwritten with `--rows 0` which means unlimited rows. 
 
 ## Contributing
 Any feedback or ideas are welcome! Want to improve something? Create a pull request!
