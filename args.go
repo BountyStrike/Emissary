@@ -77,6 +77,8 @@ func processArgs() cliOptions {
 	flag.Var(&opts.channel, "ch", "Specify a custom channel you have defined in ~/.config/emissary.ini")
 	flag.Var(&opts.inline, "inline", "Specify channel directly in the command line")
 	flag.Var(&opts.inline, "in", "Specify channel directly in the command line")
+	flag.BoolVar(&opts.email, "email", false, "Send via smtp")
+	flag.BoolVar(&opts.email, "e", false, "Send via smtp")
 	flag.StringVar(&opts.text, "text", "", "Specify the field that contains the message. Default is 'text'")
 	flag.StringVar(&opts.text, "txt", "", "Specify the field that contains the message. Default is 'text'")
 	flag.StringVar(&opts.data, "data", "", "Specify json data that should be sent")
@@ -103,22 +105,21 @@ func init() {
 		h += "  emissary [channel] [message]\n\n"
 
 		h += "Options:\n"
-		h += "  -s,   --slack        Send via Slack\n"
-		h += "  -t,   --telegram     Send via Telegram\n"
-		h += "  -e,   --email        Send via Email\n"
-		h += "  -ms,  --teams        Send via Microsoft Teams\n"
-		h += "  -si,  --stdin        Get message from stdin\n"
-		h += "  -m,   --message      Message to send\n"
 		h += "  -ch,  --channel      Specify a custom channel you have defined emissary.ini\n"
 		h += "  -in,  --inline       Specify channel directly in the commandline\n"
+		h += "  -m,   --message      Message to send\n"
+		h += "  -si,  --stdin        Get message from stdin\n"
+		h += "  -e,   --email        Send via Email\n"
 		h += "  -txt, --text         Specify the field that contains the message. Default is 'message'\n"
 		h += "  -d,   --data         Specify additional data in json format that should be sent\n"
 		h += "  -r,   --rows         Max rows/lines to send, 0 for unlimited. Default 20\n"
 		h += "  -v,   --version      Show version\n"
 
 		h += "\nExamples:\n"
-		h += "  emissary -telegram --message \"Hello telegram\"\n"
-		h += "  cat domins.txt | emissary --slack --stdin \n\n"
+		h += "  emissary --channel Telegram --message \"Hello telegram\"\n"
+		h += "  cat domins.txt | emissary -ch Slack --stdin \n"
+		h += "  emissary -ch Discord -ch Telegram -m \"Your message\" \n"
+		h += "  emissary -in \"webhook:=https://api.telegram.org/botxxxxx/sendMessage§data:={'chat_id': 'xxxx'}\" -in \"webhook:=https://hooks.slack.com/services/xxxxx\" -m \"Hack the planet!\" \n"
 
 		fmt.Fprintf(os.Stderr, h)
 	}

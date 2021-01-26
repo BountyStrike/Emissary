@@ -19,23 +19,19 @@ Usage:
   emissary [channel] [message]
 
 Options:
-  -s,   --slack        Send via Slack
-  -t,   --telegram     Send via Telegram
-  -e,   --email        Send via Email
-  -ms,  --teams        Send via Microsoft Teams
-  -si,  --stdin        Get message from stdin
-  -m,   --message      Message to send
   -ch,  --channel      Specify a custom channel you have defined emissary.ini
-  -in,  --inline       Specify channel directly in the command line
+  -in,  --inline       Specify channel directly in the commandline
+  -m,   --message      Message to send
+  -si,  --stdin        Get message from stdin
+  -e,   --email        Send via Email
   -txt, --text         Specify the field that contains the message. Default is 'message'
   -d,   --data         Specify additional data in json format that should be sent
   -r,   --rows         Max rows/lines to send, 0 for unlimited. Default 20
   -v,   --version      Show version
 
 Examples:
-  emissary -telegram --message "Hello telegram"
-  cat domains.txt | emissary --slack --stdin
-  emissary --channel Discord -m "It works!!!"
+  emissary --channel Telegram --message "Hello telegram"
+  cat domins.txt | emissary -ch Slack --stdin
   emissary -ch Discord -ch Telegram -m "Your message"
   emissary -in "webhook:=https://api.telegram.org/botxxxxx/sendMessage§data:={'chat_id': 'xxxx'}" -in "webhook:=https://hooks.slack.com/services/xxxxx" -m "Hack the planet!"
 ```
