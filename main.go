@@ -24,13 +24,11 @@ func checkResponse(httpResponse *http.Response, err error) {
 			}
 			log.Println("Response HTTP Status code: ", httpResponse.StatusCode)
 			log.Println("Response HTTP Body: ", string(body))
-			os.Exit(1)
 		}
 	}
 
 	if err != nil {
-		log.Println("Something went wrong sending your message: ", err)
-		os.Exit(1)
+		log.Printf("Something went wrong sending your message: %s\n", err)
 	}
 }
 
@@ -57,7 +55,6 @@ func main() {
 	cfg, err := ini.Load(configPath)
 	if err != nil {
 		log.Fatal("Fail to read configuration file: ", err)
-		os.Exit(1)
 	}
 
 	if len(opts.message) > 0 && opts.stdin {
@@ -70,19 +67,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	if opts.channel != "" {
-		webhook := cfg.Section(opts.channel).Key("webhook").String()
-		textField := cfg.Section(opts.channel).Key("textField").MustString("text")
-		additionalData := cfg.Section(opts.channel).Key("data").String()
+	if len(opts.inline.hooks) > 0 {
 
-		if webhook == "" {
-			fmt.Printf("[-] Channel %s does not contain a webhook...", opts.channel)
-			os.Exit(1)
+		for _, val := range opts.inline.hooks {
+			if val.webhook == "" {
+				log.Fatal("[-] Inline webhook does not contain webhook...")
+			}
+
+			if val.textField == "" {
+				val.textField = "text"
+			}
+
+			resp, err := WebhookRequest(val.webhook, opts.message, val.textField, val.data)
+
+			checkResponse(resp, err)
 		}
-
-		resp, err := WebhookRequest(webhook, opts.message, textField, additionalData)
-
-		checkResponse(resp, err)
 
 	}
 
@@ -93,12 +92,7 @@ func main() {
 		sc := bufio.NewScanner(os.Stdin)
 		msg := ""
 		for sc.Scan() {
-			// Stupid ms teams not handling new lines properly
-			if opts.teams {
-				msg = sc.Text() + "\n"
-			} else {
-				msg = sc.Text()
-			}
+			msg = sc.Text()
 			if opts.rows == 0 {
 				messages = append(messages, msg)
 			} else {
@@ -112,38 +106,37 @@ func main() {
 		}
 
 		messages = append(messages, fmt.Sprintf("--------\nSent %d lines", count))
+		fmt.Println(messages)
 
 		opts.message = strings.Join(messages[:], "\n")
 	}
 
-	if opts.telegram {
-		webhook := cfg.Section("Telegram").Key("webhook").String()
-		textField := cfg.Section("Telegram").Key("textField").MustString("text")
-		additionalData := cfg.Section("Telegram").Key("data").String()
+	if len(opts.channel) != 0 {
+		for _, ch := range opts.channel {
+			webhook := cfg.Section(ch).Key("webhook").String()
+			textField := cfg.Section(ch).Key("textField").MustString("text")
+			additionalData := cfg.Section(ch).Key("data").String()
 
-		resp, err := WebhookRequest(webhook, opts.message, textField, additionalData)
+			if webhook == "" {
+				fmt.Printf("[-] Channel %s does not contain a webhook...", ch)
+				os.Exit(1)
+			}
 
-		checkResponse(resp, err)
-	}
+			// MS Teams hack for properly showing rows
+			if strings.HasPrefix(webhook, "https://outlook.office.com") {
+				split := strings.Split(opts.message, "\n")
+				newMessage := ""
+				for _, v := range split {
+					newMessage += v + "\n\n"
+				}
+				opts.message = newMessage
+			}
 
-	if opts.slack {
-		webhook := cfg.Section("Slack").Key("webhook").String()
-		textField := cfg.Section("Slack").Key("textField").MustString("text")
-		additionalData := cfg.Section("Slack").Key("data").String()
+			resp, err := WebhookRequest(webhook, opts.message, textField, additionalData)
 
-		resp, err := WebhookRequest(webhook, opts.message, textField, additionalData)
+			checkResponse(resp, err)
 
-		checkResponse(resp, err)
-	}
-
-	if opts.teams {
-		webhook := cfg.Section("Teams").Key("webhook").String()
-		textField := cfg.Section("Teams").Key("textField").MustString("text")
-		additionalData := cfg.Section("Teams").Key("data").String()
-
-		resp, err := WebhookRequest(webhook, opts.message, textField, additionalData)
-
-		checkResponse(resp, err)
+		}
 	}
 
 	if opts.email {

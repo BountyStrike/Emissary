@@ -34,11 +34,13 @@ Options:
 
 Examples:
   emissary -telegram --message "Hello telegram"
-  cat domins.txt | emissary --slack --stdin
+  cat domains.txt | emissary --slack --stdin
   emissary --channel Discord -m "It works!!!"
+  emissary -ch Discord -ch Telegram -m "Your message"
+  emissary -in "webhook:=https://api.telegram.org/botxxxxx/sendMessage§data:={'chat_id': 'xxxx'}" -in "webhook:=https://hooks.slack.com/services/xxxxx" -m "Hack the planet!"
 ```
 
-**Create ~/.config/emissary.ini with the following:**
+### Create ~/.config/emissary.ini with the following:
 ```
 [Telegram]
 webhook=https://api.telegram.org/botxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxx/sendMessage
@@ -64,7 +66,7 @@ subject="New domains found!"
 Now you can start using emissary :)
 
 
-**Custom Webhooks**
+### Custom Webhooks
 
 It's possible to add your own channels as well, adding Discord as a custom channel looks like this:
 
@@ -85,32 +87,50 @@ The following fields can be used for a given channel:
 | data      | If you want to send additional data, you can specify that here as a json formatted string, e.g. `data={"someKey": "someValue", "otherKey": "otherValue"}`. |
 
 
-**Pipe data via stdin:**
+### Pipe data via stdin:
 ```
 $ cat domains.txt | emissary --telegram --stdin
 ```
 
-**Specify a message as an argument:**
+### Specify a message as an argument:
 ```
 $ emissary --telegram --message "This is a very cool message"
 ```
 
-**Send to multiple channels:**
+### Send to multiple channels:
 ```
 $ cat domains.txt | emissary -t -s -si
 ```
 
-**Send only 10 lines:**
+### Send only 10 lines:
 ```
 $ cat domains.txt | emissary -t -si --rows 10
 ```
 
-**Send everything from the file:**
+### Send everything from the file:
 ```
 $ cat domains.txt | emissary -t -si -r 0
 ```
 
 Emissary will only send 20 rows by default, this is to protect against accidentally sending a gazillion domains :) It can be overwritten with `--rows 0` which means unlimited rows. 
+
+### Multiple inline webhooks
+
+It's possible use multiple webhooks directly on the command line without specifying them in `config.ini`.
+
+The following command will send `Hack the planet` to Telegram and Slack:
+
+```
+emissary -in "webhook:=https://api.telegram.org/botxxxxx/sendMessage§data:={'chat_id': 'xxxx'}" -in "webhook:=https://hooks.slack.com/services/xxxxx" -m "Hack the planet!"
+```
+
+The same fields in `config.ini` are used inline as well. They can be used like so:
+
+- `webhook:=<url>`
+- `textField:=<key>`
+- `data:=<additional json>`
+
+The character `§` is used as a delimiter between each field.
 
 ## Contributing
 Any feedback or ideas are welcome! Want to improve something? Create a pull request!

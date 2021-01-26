@@ -4,41 +4,81 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 )
 
+type channels []string
+
+func (c *channels) String() string {
+	return ""
+}
+
+func (c *channels) Set(value string) error {
+	*c = append(*c, value)
+	return nil
+}
+
+type inlines struct {
+	hooks []inline
+}
+
+type inline struct {
+	webhook   string
+	textField string
+	data      string
+}
+
+func (i *inlines) String() string {
+	return "{'lol':1}"
+}
+
+func (i *inlines) Set(value string) error {
+	split := strings.Split(value, "§")
+	mul := inlines{}
+	final := inline{}
+	for _, val := range split {
+		s := strings.Split(val, ":=")
+
+		if strings.ToLower(s[0]) == "webhook" {
+			final.webhook = s[1]
+		}
+
+		if strings.ToLower(s[0]) == "textField" {
+			final.textField = s[1]
+		}
+
+		if strings.ToLower(s[0]) == "data" {
+			final.data = s[1]
+		}
+
+	}
+	mul.hooks = append(mul.hooks, final)
+	*i = mul
+
+	return nil
+}
+
 type cliOptions struct {
-	telegram bool
-	discord  bool
-	slack    bool
-	email    bool
-	teams    bool
-	version  bool
-	stdin    bool
-	message  string
-	channel  string
-	inline   string
-	data     string
-	text     string
-	rows     int
+	email   bool
+	version bool
+	stdin   bool
+	message string
+	channel channels
+	inline  inlines
+	data    string
+	text    string
+	rows    int
 }
 
 func processArgs() cliOptions {
 
 	opts := cliOptions{}
-	flag.BoolVar(&opts.telegram, "telegram", false, "Send via telegram")
-	flag.BoolVar(&opts.telegram, "t", false, "Send via telegram")
-	flag.BoolVar(&opts.slack, "slack", false, "Send via slack")
-	flag.BoolVar(&opts.slack, "s", false, "Send via slack")
-	flag.BoolVar(&opts.email, "email", false, "Send via smtp")
-	flag.BoolVar(&opts.email, "e", false, "Send via smtp")
-	flag.BoolVar(&opts.teams, "teams", false, "Send via Microsoft Teams")
-	flag.BoolVar(&opts.teams, "ms", false, "Send via Send via Microsoft Teams")
-	flag.StringVar(&opts.channel, "channel", "", "Specify a custom channel you have defined in ~/.config/emissary.ini")
-	flag.StringVar(&opts.channel, "ch", "", "Specify a custom channel you have defined in ~/.config/emissary.ini")
-	flag.StringVar(&opts.inline, "inline", "", "Specify channel directly in the command line")
-	flag.StringVar(&opts.inline, "in", "", "Specify channel directly in the command line")
-	flag.StringVar(&opts.text, "text", "text", "Specify the field that contains the message. Default is 'text'")
-	flag.StringVar(&opts.text, "txt", "text", "Specify the field that contains the message. Default is 'text'")
+	flag.Var(&opts.channel, "channel", "Specify a custom channel you have defined in ~/.config/emissary.ini")
+	flag.Var(&opts.channel, "ch", "Specify a custom channel you have defined in ~/.config/emissary.ini")
+	flag.Var(&opts.inline, "inline", "Specify channel directly in the command line")
+	flag.Var(&opts.inline, "in", "Specify channel directly in the command line")
+	flag.StringVar(&opts.text, "text", "", "Specify the field that contains the message. Default is 'text'")
+	flag.StringVar(&opts.text, "txt", "", "Specify the field that contains the message. Default is 'text'")
 	flag.StringVar(&opts.data, "data", "", "Specify json data that should be sent")
 	flag.StringVar(&opts.data, "d", "", "Specify json data that should be sent")
 	flag.BoolVar(&opts.version, "version", false, "Show version number")

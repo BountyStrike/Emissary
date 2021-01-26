@@ -25,7 +25,7 @@ func WebhookRequest(webhook string, message string, msgField string, additionalD
 	jayson := map[string]interface{}{
 		msgField: message,
 	}
-
+	additionalData = strings.ReplaceAll(additionalData, "'", "\"")
 	if additionalData != "" {
 		data := []byte(`` + additionalData + ``)
 		var f interface{}
@@ -37,7 +37,6 @@ func WebhookRequest(webhook string, message string, msgField string, additionalD
 			jayson[k] = v
 		}
 	}
-
 	js, _ := json.Marshal(jayson)
 	return request(webhook, string(js))
 }
