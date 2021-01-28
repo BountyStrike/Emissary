@@ -78,7 +78,14 @@ func main() {
 				val.textField = "text"
 			}
 
-			resp, err := WebhookRequest(val.webhook, opts.message, val.textField, val.data)
+			json, err := PreparePayload(opts.message, val.textField, val.data)
+
+			if err != nil {
+				log.Printf("Could not prepare payload for webhook %s", val.webhook)
+				continue
+			}
+
+			resp, err := SendRequest(val.webhook, json)
 
 			checkResponse(resp, err)
 		}
@@ -106,8 +113,6 @@ func main() {
 		}
 
 		messages = append(messages, fmt.Sprintf("--------\nSent %d lines", count))
-		fmt.Println(messages)
-
 		opts.message = strings.Join(messages[:], "\n")
 	}
 
@@ -118,8 +123,8 @@ func main() {
 			additionalData := cfg.Section(ch).Key("data").String()
 
 			if webhook == "" {
-				fmt.Printf("[-] Channel %s does not contain a webhook...", ch)
-				os.Exit(1)
+				log.Printf("[-] Channel %s does not contain a webhook...", ch)
+				continue
 			}
 
 			// MS Teams hack for properly showing rows
@@ -132,7 +137,14 @@ func main() {
 				opts.message = newMessage
 			}
 
-			resp, err := WebhookRequest(webhook, opts.message, textField, additionalData)
+			json, err := PreparePayload(opts.message, textField, additionalData)
+
+			if err != nil {
+				log.Printf("Could not prepare payload for channel %s", ch)
+				continue
+			}
+
+			resp, err := SendRequest(webhook, json)
 
 			checkResponse(resp, err)
 

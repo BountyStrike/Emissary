@@ -73,6 +73,7 @@ type cliOptions struct {
 func processArgs() cliOptions {
 
 	opts := cliOptions{}
+	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	flag.Var(&opts.channel, "channel", "Specify a custom channel you have defined in ~/.config/emissary.ini")
 	flag.Var(&opts.channel, "ch", "Specify a custom channel you have defined in ~/.config/emissary.ini")
 	flag.Var(&opts.inline, "inline", "Specify channel directly in the command line")
@@ -102,7 +103,7 @@ func init() {
 		h := "\nSend data through chat channels. Made by @dubs3c.\n\n"
 
 		h += "Usage:\n"
-		h += "  emissary [channel] [message]\n\n"
+		h += "  emissary [options] [message]\n\n"
 
 		h += "Options:\n"
 		h += "  -ch,  --channel      Specify a custom channel you have defined emissary.ini\n"

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/smtp"
@@ -19,12 +20,13 @@ type EmailConfig struct {
 	message   string
 }
 
-// WebhookRequest A general method for sending requests to webhooks
-func WebhookRequest(webhook string, message string, msgField string, additionalData string) (*http.Response, error) {
+// PreparePayload Prepare a json payload to be sent to channel
+func PreparePayload(message string, msgField string, additionalData string) ([]byte, error) {
 
 	jayson := map[string]interface{}{
 		msgField: message,
 	}
+	// Required for valid json
 	additionalData = strings.ReplaceAll(additionalData, "'", "\"")
 	if additionalData != "" {
 		data := []byte(`` + additionalData + ``)
@@ -37,8 +39,11 @@ func WebhookRequest(webhook string, message string, msgField string, additionalD
 			jayson[k] = v
 		}
 	}
-	js, _ := json.Marshal(jayson)
-	return request(webhook, string(js))
+	js, err := json.Marshal(jayson)
+	if err != nil {
+		return []byte{}, err
+	}
+	return js, nil
 }
 
 // Email Send messages via email
@@ -61,7 +66,8 @@ func Email(email EmailConfig) error {
 	return nil
 }
 
-func request(endpoint string, data string) (*http.Response, error) {
+// SendRequest Send the request to the webhook
+func SendRequest(endpoint string, data []byte) (*http.Response, error) {
 
 	tr := &http.Transport{
 		MaxIdleConns:       10,
@@ -74,7 +80,7 @@ func request(endpoint string, data string) (*http.Response, error) {
 
 	client := &http.Client{Transport: tr}
 
-	resp, err = client.Post(endpoint, "application/json", strings.NewReader(data))
+	resp, err = client.Post(endpoint, "application/json", bytes.NewBuffer(data))
 
 	if err != nil {
 		return resp, err
