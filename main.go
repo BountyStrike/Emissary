@@ -44,17 +44,22 @@ func main() {
 		os.Exit(0)
 	}
 
-	User, err := user.Current()
+	var cfg *ini.File
 
-	if err != nil {
-		log.Fatal("Something went wrong trying to figure out your home directory", err)
-	}
+	if len(opts.channel) != 0 || opts.email {
 
-	configPath := filepath.FromSlash(User.HomeDir + "/.config/emissary.ini")
+		User, err := user.Current()
 
-	cfg, err := ini.Load(configPath)
-	if err != nil {
-		log.Fatal("Fail to read configuration file: ", err)
+		if err != nil {
+			log.Fatal("Something went wrong trying to figure out your home directory", err)
+		}
+
+		configPath := filepath.FromSlash(User.HomeDir + "/.config/emissary.ini")
+
+		cfg, err = ini.Load(configPath)
+		if err != nil {
+			log.Fatal("Fail to read configuration file: ", err)
+		}
 	}
 
 	if len(opts.message) > 0 && opts.stdin {
@@ -71,7 +76,8 @@ func main() {
 
 		for _, val := range opts.inline.hooks {
 			if val.webhook == "" {
-				log.Fatal("[-] Inline webhook does not contain webhook...")
+				fmt.Println("[-] Inline webhook does not contain webhook...")
+				os.Exit(1)
 			}
 
 			if val.textField == "" {
