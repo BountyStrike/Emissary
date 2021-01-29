@@ -37,6 +37,10 @@ func TestMainApp(t *testing.T) {
 }
 
 func TestMainWithoutWebhook(t *testing.T) {
+
+	// This is a hack in order to test the application without
+	// failing the test when e.g. os.Exit(1) is executed.
+	// By doing this I have complete control over the exit status code.
 	if os.Getenv("EXEC") != "" {
 
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
