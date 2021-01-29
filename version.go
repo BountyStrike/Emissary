@@ -1,4 +1,4 @@
 package main
 
 // VERSION Emissary version
-const VERSION = "0.8.5"
+const VERSION = "1.0.0"
