@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/smtp"
@@ -19,26 +20,30 @@ type EmailConfig struct {
 	message   string
 }
 
-// Telegram Send messages via telegram
-func Telegram(chatID string, apiKey string, message string) (*http.Response, error) {
+// PreparePayload Prepare a json payload to be sent to channel
+func PreparePayload(message string, msgField string, additionalData string) ([]byte, error) {
 
 	jayson := map[string]interface{}{
-		"chat_id": chatID,
-		"text":    message,
+		msgField: message,
 	}
-	js, _ := json.Marshal(jayson)
-	endpoint := "https://api.telegram.org/bot" + apiKey + "/sendMessage"
-
-	return request(endpoint, string(js))
-}
-
-// Slack Send messages via Slack
-func Slack(message string, webhook string) (*http.Response, error) {
-	jayson := map[string]interface{}{
-		"text": message,
+	// Required for valid json
+	additionalData = strings.ReplaceAll(additionalData, "'", "\"")
+	if additionalData != "" {
+		data := []byte(`` + additionalData + ``)
+		var f interface{}
+		if err := json.Unmarshal(data, &f); err != nil {
+			return nil, err
+		}
+		m := f.(map[string]interface{})
+		for k, v := range m {
+			jayson[k] = v
+		}
 	}
-	js, _ := json.Marshal(jayson)
-	return request(webhook, string(js))
+	js, err := json.Marshal(jayson)
+	if err != nil {
+		return []byte{}, err
+	}
+	return js, nil
 }
 
 // Email Send messages via email
@@ -61,16 +66,8 @@ func Email(email EmailConfig) error {
 	return nil
 }
 
-// Teams Send messages via Microsoft Teams
-func Teams(message string, webhook string) (*http.Response, error) {
-	jayson := map[string]interface{}{
-		"text": message,
-	}
-	js, _ := json.Marshal(jayson)
-	return request(webhook, string(js))
-}
-
-func request(endpoint string, data string) (*http.Response, error) {
+// SendRequest Send the request to the webhook
+func SendRequest(endpoint string, data []byte) (*http.Response, error) {
 
 	tr := &http.Transport{
 		MaxIdleConns:       10,
@@ -83,7 +80,7 @@ func request(endpoint string, data string) (*http.Response, error) {
 
 	client := &http.Client{Transport: tr}
 
-	resp, err = client.Post(endpoint, "application/json", strings.NewReader(data))
+	resp, err = client.Post(endpoint, "application/json", bytes.NewBuffer(data))
 
 	if err != nil {
 		return resp, err

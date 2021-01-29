@@ -17,20 +17,18 @@ import (
 
 func checkResponse(httpResponse *http.Response, err error) {
 	if httpResponse != nil {
-		if httpResponse.StatusCode > 201 {
+		if httpResponse.StatusCode >= 400 {
 			body, respErr := ioutil.ReadAll(httpResponse.Body)
 			if respErr != nil {
 				log.Println("Error reading response body:", respErr)
 			}
 			log.Println("Response HTTP Status code: ", httpResponse.StatusCode)
 			log.Println("Response HTTP Body: ", string(body))
-			os.Exit(1)
 		}
 	}
 
 	if err != nil {
-		log.Println("Something went wrong sending your message: ", err)
-		os.Exit(1)
+		log.Printf("Something went wrong sending your message: %s\n", err)
 	}
 }
 
@@ -46,18 +44,22 @@ func main() {
 		os.Exit(0)
 	}
 
-	User, err := user.Current()
+	var cfg *ini.File
 
-	if err != nil {
-		log.Fatal("Something went wrong trying to figure out your home directory", err)
-	}
+	if len(opts.channel) != 0 || opts.email {
 
-	configPath := filepath.FromSlash(User.HomeDir + "/.config/emissary.ini")
+		User, err := user.Current()
 
-	cfg, err := ini.Load(configPath)
-	if err != nil {
-		log.Fatal("Fail to read configuration file: ", err)
-		os.Exit(1)
+		if err != nil {
+			log.Fatal("Something went wrong trying to figure out your home directory", err)
+		}
+
+		configPath := filepath.FromSlash(User.HomeDir + "/.config/emissary.ini")
+
+		cfg, err = ini.Load(configPath)
+		if err != nil {
+			log.Fatal("Fail to read configuration file: ", err)
+		}
 	}
 
 	if len(opts.message) > 0 && opts.stdin {
@@ -70,6 +72,32 @@ func main() {
 		os.Exit(1)
 	}
 
+	if len(opts.inline.hooks) > 0 {
+
+		for _, val := range opts.inline.hooks {
+			if val.webhook == "" {
+				fmt.Println("[-] Inline webhook does not contain webhook...")
+				os.Exit(1)
+			}
+
+			if val.textField == "" {
+				val.textField = "text"
+			}
+
+			json, err := PreparePayload(opts.message, val.textField, val.data)
+
+			if err != nil {
+				log.Printf("Could not prepare payload for webhook %s", val.webhook)
+				continue
+			}
+
+			resp, err := SendRequest(val.webhook, json)
+
+			checkResponse(resp, err)
+		}
+
+	}
+
 	messages := []string{"Data from Emissary\n--------"}
 
 	if opts.stdin {
@@ -77,12 +105,7 @@ func main() {
 		sc := bufio.NewScanner(os.Stdin)
 		msg := ""
 		for sc.Scan() {
-			// Stupid ms teams not handling new lines properly
-			if opts.teams {
-				msg = sc.Text() + "\n"
-			} else {
-				msg = sc.Text()
-			}
+			msg = sc.Text()
 			if opts.rows == 0 {
 				messages = append(messages, msg)
 			} else {
@@ -96,33 +119,42 @@ func main() {
 		}
 
 		messages = append(messages, fmt.Sprintf("--------\nSent %d lines", count))
-
 		opts.message = strings.Join(messages[:], "\n")
 	}
 
-	if opts.telegram {
-		telegramAPIKey := cfg.Section("Telegram").Key("api_key").String()
-		telegramUser := cfg.Section("Telegram").Key("chat_id").String()
+	if len(opts.channel) != 0 {
+		for _, ch := range opts.channel {
+			webhook := cfg.Section(ch).Key("webhook").String()
+			textField := cfg.Section(ch).Key("textField").MustString("text")
+			additionalData := cfg.Section(ch).Key("data").String()
 
-		resp, err := Telegram(telegramUser, telegramAPIKey, opts.message)
+			if webhook == "" {
+				log.Printf("[-] Channel %s does not contain a webhook...", ch)
+				continue
+			}
 
-		checkResponse(resp, err)
-	}
+			// MS Teams hack for properly showing rows
+			if strings.HasPrefix(webhook, "https://outlook.office.com") {
+				split := strings.Split(opts.message, "\n")
+				newMessage := ""
+				for _, v := range split {
+					newMessage += v + "\n\n"
+				}
+				opts.message = newMessage
+			}
 
-	if opts.slack {
-		slackWebhook := cfg.Section("Slack").Key("webhook").String()
+			json, err := PreparePayload(opts.message, textField, additionalData)
 
-		resp, err := Slack(opts.message, slackWebhook)
+			if err != nil {
+				log.Printf("Could not prepare payload for channel %s", ch)
+				continue
+			}
 
-		checkResponse(resp, err)
-	}
+			resp, err := SendRequest(webhook, json)
 
-	if opts.teams {
-		slackWebhook := cfg.Section("Teams").Key("webhook").String()
+			checkResponse(resp, err)
 
-		resp, err := Teams(opts.message, slackWebhook)
-
-		checkResponse(resp, err)
+		}
 	}
 
 	if opts.email {
