@@ -2,6 +2,8 @@
 <p align="center">
   <img width="300" height="300" src="./img.png">
   <p align="center">
+    <a href="https://goreportcard.com/badge/github.com/BountyStrike/Emissary"><img src="https://goreportcard.com/badge/github.com/BountyStrike/Emissary"></a>
+    <a href="https://img.shields.io/github/workflow/status/BountyStrike/Emissary/Go"><img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/BountyStrike/Emissary/Go"></a><br />
   Send notifications via different channels such as Slack, Telegram or Teams in your bug bounty flow. 
   </p>
 </p>
