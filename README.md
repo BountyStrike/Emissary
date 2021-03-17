@@ -18,12 +18,13 @@ $ emissary
 Send data through chat channels. Made by @dubs3c.
 
 Usage:
-  emissary [channel] [message]
+  emissary [options] [message]
 
 Options:
   -ch,  --channel      Specify a custom channel you have defined emissary.ini
   -in,  --inline       Specify channel directly in the commandline
   -m,   --message      Message to send
+  -h,   --header       Custom header
   -si,  --stdin        Get message from stdin
   -e,   --email        Send via Email
   -txt, --text         Specify the field that contains the message. Default is 'message'
@@ -33,7 +34,7 @@ Options:
 
 Examples:
   emissary --channel Telegram --message "Hello telegram"
-  cat domins.txt | emissary -ch Slack --stdin
+  cat domins.txt | emissary -ch Slack --stdin --header "New subdomains from Google!"
   emissary -ch Discord -ch Telegram -m "Your message"
   emissary -in "webhook:=https://api.telegram.org/botxxxxx/sendMessage§data:={'chat_id': 'xxxx'}" -in "webhook:=https://hooks.slack.com/services/xxxxx" -m "Hack the planet!"
 ```
