@@ -98,7 +98,7 @@ func main() {
 
 	}
 
-	messages := []string{"Data from Emissary\n--------"}
+	messages := []string{opts.header + "\n--------"}
 
 	if opts.stdin {
 		count := 0

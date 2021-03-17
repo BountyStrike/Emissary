@@ -67,6 +67,7 @@ type cliOptions struct {
 	inline  inlines
 	data    string
 	text    string
+	header  string
 	rows    int
 }
 
@@ -80,6 +81,8 @@ func processArgs() cliOptions {
 	flag.Var(&opts.inline, "in", "Specify channel directly in the command line")
 	flag.BoolVar(&opts.email, "email", false, "Send via smtp")
 	flag.BoolVar(&opts.email, "e", false, "Send via smtp")
+	flag.StringVar(&opts.header, "header", "Data from Emissary", "Specify custom header to send. Default 'Data from Emissary'")
+	flag.StringVar(&opts.header, "h", "Data from Emissary", "Specify custom header to send. Default 'Data from Emissary'")
 	flag.StringVar(&opts.text, "text", "", "Specify the field that contains the message. Default is 'text'")
 	flag.StringVar(&opts.text, "txt", "", "Specify the field that contains the message. Default is 'text'")
 	flag.StringVar(&opts.data, "data", "", "Specify json data that should be sent")
@@ -109,6 +112,7 @@ func init() {
 		h += "  -ch,  --channel      Specify a custom channel you have defined emissary.ini\n"
 		h += "  -in,  --inline       Specify channel directly in the commandline\n"
 		h += "  -m,   --message      Message to send\n"
+		h += "  -h,   --header       Custom header\n"
 		h += "  -si,  --stdin        Get message from stdin\n"
 		h += "  -e,   --email        Send via Email\n"
 		h += "  -txt, --text         Specify the field that contains the message. Default is 'message'\n"
@@ -118,7 +122,7 @@ func init() {
 
 		h += "\nExamples:\n"
 		h += "  emissary --channel Telegram --message \"Hello telegram\"\n"
-		h += "  cat domins.txt | emissary -ch Slack --stdin \n"
+		h += "  cat domins.txt | emissary -ch Slack --stdin --header \"New subdomains from Google!\"\n"
 		h += "  emissary -ch Discord -ch Telegram -m \"Your message\" \n"
 		h += "  emissary -in \"webhook:=https://api.telegram.org/botxxxxx/sendMessage§data:={'chat_id': 'xxxx'}\" -in \"webhook:=https://hooks.slack.com/services/xxxxx\" -m \"Hack the planet!\" \n"
 
