@@ -88,27 +88,27 @@ The following fields can be used for a given channel:
 
 ### Pipe data via stdin:
 ```
-$ cat domains.txt | emissary --telegram --stdin
+$ cat domains.txt | emissary -ch telegram --stdin
 ```
 
 ### Specify a message as an argument:
 ```
-$ emissary --telegram --message "This is a very cool message"
+$ emissary -ch telegram --message "This is a very cool message"
 ```
 
 ### Send to multiple channels:
 ```
-$ cat domains.txt | emissary -t -s -si
+$ cat domains.txt | emissary -ch telegram -ch slack -si
 ```
 
 ### Send only 10 lines:
 ```
-$ cat domains.txt | emissary -t -si --rows 10
+$ cat domains.txt | emissary -ch telegram -si --rows 10
 ```
 
 ### Send everything from the file:
 ```
-$ cat domains.txt | emissary -t -si -r 0
+$ cat domains.txt | emissary -ch telegram -si -r 0
 ```
 
 Emissary will only send 20 rows by default, this is to protect against accidentally sending a gazillion domains :) It can be overwritten with `--rows 0` which means unlimited rows. 
